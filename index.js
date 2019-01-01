@@ -1,104 +1,13 @@
 var Service, Characteristic;
 var request = require("request");
-var xpath = require("xpath");
-var dom = require("xmldom").DOMParser;
-var JSONPath = require("JSONPath");
-var pollingtoevent = require('polling-to-event');
+var pollingtoevent = require("polling-to-event");
+var mappers = require("./mappers.js");
 
 module.exports = function (homebridge) {
 	Service = homebridge.hap.Service;
 	Characteristic = homebridge.hap.Characteristic;
 	homebridge.registerAccessory("homebridge-http-advanced-accessory", "HttpAdvancedAccessory", HttpAdvancedAccessory);
 };
-
-/**
- * Mapper class that can be used as a dictionary for mapping one value to another
- *
- * @param {Object} parameters The parameters of the mapper
- * @constructor
- */
-function StaticMapper(parameters) {
-	var self = this;
-	self.mapping = parameters.mapping;
-
-	self.map = function(value) {
-		return self.mapping[value] || value;
-	};
-}
-
-/**
- * Mapper class that can extract a part of the string using a regex
- *
- * @param {Object} parameters The parameters of the mapper
- * @constructor
- */
-function RegexMapper(parameters) {
-	var self = this;
-	self.regexp = new RegExp(parameters.regexp);
-	self.capture = parameters.capture || "1";
-
-	self.map = function(value) {
-		var matches = self.regexp.exec(value);
-
-		if (matches !== null && self.capture in matches) {
-			return matches[self.capture];
-		}
-
-		return value;
-	};
-}
-
-/**
- * Mapper class that uses XPath to select the text of a node or the value of an attribute
- *
- * @param {Object} parameters The parameters of the mapper
- * @constructor
- */
-function XPathMapper(parameters) {
-	var self = this;
-	self.xpath = parameters.xpath;
-	self.index = parameters.index || 0;
-
-	self.map = function(value) {
-		var document = new dom().parseFromString(value);
-		var result  = xpath.select(this.xpath, document);
-
-		if (typeof result == "string") {
-			return result;
-		} else if (result instanceof Array && result.length > self.index) {
-			return result[self.index].data;
-		}
-
-		return value;
-	};
-}
-
-/**
- * Mapper class that uses JSONPath to select the text of a node or the value of an attribute
- *
- * @param {Object} parameters The parameters of the mapper
- * @constructor
- */
-function JPathMapper(parameters) {
-	var self = this;
-	self.jpath = parameters.jpath;
-	self.index = parameters.index || 0;
-
-	self.map = function(value) {
-		var json = JSON.parse(value);
-		var result  = JSONPath({path: self.jpath, json: json});
-
-		if (result instanceof Array && result.length > self.index) {
-			result = result[self.index];
-		}
-		
-		if (result instanceof Object) {
-			return JSON.stringify(result);
-		}
-
-		return result;
-	};
-}
 
 function HttpAdvancedAccessory(log, config) {
 	this.log = log;
@@ -146,16 +55,16 @@ function HttpAdvancedAccessory(log, config) {
 			actionDescription.mappers.forEach(function(matches) {
 				switch (matches.type) {
 					case "regex":
-						action.mappers.push(new RegexMapper(matches.parameters));
+						action.mappers.push(new mappers.RegexMapper(matches.parameters));
 						break;
 					case "static":
-						action.mappers.push(new StaticMapper(matches.parameters));
+						action.mappers.push(new mappers.StaticMapper(matches.parameters));
 						break;
 					case "xpath":
-						action.mappers.push(new XPathMapper(matches.parameters));
+						action.mappers.push(new mappers.XPathMapper(matches.parameters));
 						break;
 					case "jpath":
-						action.mappers.push(new JPathMapper(matches.parameters));
+						action.mappers.push(new mappers.JPathMapper(matches.parameters));
 						break;
 				}
 			});
