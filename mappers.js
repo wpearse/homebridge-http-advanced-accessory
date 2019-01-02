@@ -7,6 +7,7 @@ module.exports = {
     RegexMapper,
     XPathMapper,
     JPathMapper,
+    EvalMapper,
 }
 
 /**
@@ -93,6 +94,23 @@ function JPathMapper(parameters) {
 		if (result instanceof Object) {
 			return JSON.stringify(result);
 		}
+
+		return result;
+	};
+}
+
+/**
+ * Mapper class that evaluates the given js string
+ *
+ * @param {Object} parameters The parameters of the mapper
+ * @constructor
+ */
+function EvalMapper(parameters) {
+	var self = this;
+	self.exp = parameters.expression;
+
+	self.map = function(value) {
+		var result = eval(self.exp);
 
 		return result;
 	};

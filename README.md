@@ -534,3 +534,11 @@ This is still incomplete but the unofficial [Daikin documentation](https://githu
 }
 
 ```
+
+## Plugin development
+
+To aid in testing and developing this plugin further I have provided a sample hombridge config. This will allow you to spin a homebridge instance for development that has this plugin already installed.  
+Install homebridge, checkout this repo and run: 
+```sh
+$ homebridge --debug --user-storage-path .homebridge-dev --plugin-path ./ 
+```
