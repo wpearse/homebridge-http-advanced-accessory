@@ -23,5 +23,11 @@
     "xmldom": "^0.1.27",
     "xpath": "0.0.24"
   },
-  "homepage": "https://github.com/staromeste/homebridge-http-advanced-accessory#readme"
+  "homepage": "https://github.com/staromeste/homebridge-http-advanced-accessory#readme",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  },
+  "scripts": {
+    "test": "jest"
+  }
 }
