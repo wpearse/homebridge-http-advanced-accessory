@@ -314,6 +314,24 @@ Let's assume this mapper gets the following input:
 
 In this case this mapper will return "ARMED_IMMEDIATE". The ***index*** parameter can be used to specify which element to return if the JSONPath selects multiple elements. In the example above it is completely redundant as partition[2] already makes sure that a single partition is selected.
 
+#### Eval mapper
+
+The eval mapper can be used to run any javascript code, which will be interpreted when the event is called. Use `value` to use the set/read value in your code.
+
+Configuration is as follows:
+
+```json
+{
+    "type": "eval",
+    "parameters": {
+        "expression": "value === \"OK\" ? 1 : 0"
+    }
+}
+```
+
+In this example, if the mapper receives the string `OK` it will return `1`, for anything else it will return `0`.  
+Be careful with the code you write, this mapper can be very flexible but it can also blow up quite easily.
+
 ## Supported services
 
 AccessoryInformation
