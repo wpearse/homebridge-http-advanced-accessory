@@ -15,6 +15,7 @@ function HttpAdvancedAccessory(log, config) {
 	this.service = config.service;
 	this.optionCharacteristic = config.optionCharacteristic || [];
 	this.forceRefreshDelay = config.forceRefreshDelay || 0;
+	this.setterDelay  = config.setterDelay || 200;
 	this.enableSet = true;
 	this.statusEmitters = [];
 	this.state = {};
@@ -230,6 +231,7 @@ HttpAdvancedAccessory.prototype = {
 				var action = this.urls[actionName];
 				if (!action || !action.url) {
 					callback(null);
+					return;
 				}
 				var state = this.state;
 				var body = action.body;
@@ -343,6 +345,7 @@ HttpAdvancedAccessory.prototype = {
 		}
 	
 		function makeHelper(characteristic) {
+			var timeoutID = null;
 			return {
 				getter: function (callback) {
 					var actionName = "get" + characteristic.displayName.replace(/\s/g, '');
@@ -398,7 +401,16 @@ HttpAdvancedAccessory.prototype = {
 						
 					}
 				},
-				setter: function (value, callback) { setDispatch(value, callback, characteristic) }
+				setter: function (value, callback) { 
+					this.debugLog("updating " + characteristic.displayName.replace(/\s/g, '') + " with value " + value + " in " + this.setterDelay + "ms");
+					if(timeoutID != null) {
+						clearTimeout(timeoutID.tid); 
+						timeoutID.callback();
+						this.debugLog("clearing timeout for setter " + characteristic.displayName.replace(/\s/g, ''));
+					}
+					timeoutID = {callback : callback};
+					timeoutID.tid = setTimeout(function(){setDispatch(value, callback, characteristic);timeoutID=null;}.bind(this), this.setterDelay);
+				}
 			};
 		}
 		return [informationService, newService];
