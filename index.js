@@ -244,9 +244,14 @@ HttpAdvancedAccessory.prototype = {
 				this.httpRequest(url, body, action.httpMethod, function(error, response, responseBody) {
 					if (error) {
 						this.log("SetState function failed: %s", error.message);
-						callback(error);
-					} else {
-						callback(null, value);
+					}
+					if (callback) {
+						if (error) {
+							callback(error);
+						} else {
+							// https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/Characteristic.js#L34 setter callback takes only error as arg
+							callback(); 
+						}	
 					}
 				}.bind(this));
 
@@ -408,14 +413,16 @@ HttpAdvancedAccessory.prototype = {
 						setDispatch(value, callback, characteristic);
 					} else {
 						// making a request and setter delay is set
+						// optimistic callback calling if we have a delay
+						// this also means we won't be getting back any errors in homekit
+						callback();
+						
 						this.debugLog("updating " + characteristic.displayName.replace(/\s/g, '') + " with value " + value + " in " + this.setterDelay + "ms");
 						if(timeoutID != null) {
-							clearTimeout(timeoutID.tid); 
-							timeoutID.callback();
+							clearTimeout(timeoutID); 
 							this.debugLog("clearing timeout for setter " + characteristic.displayName.replace(/\s/g, ''));
 						}
-						timeoutID = {callback : callback};
-						timeoutID.tid = setTimeout(function(){setDispatch(value, callback, characteristic);timeoutID=null;}.bind(this), this.setterDelay);
+						timeoutID = setTimeout(function(){setDispatch(value, null, characteristic);timeoutID=null;}.bind(this), this.setterDelay);
 					}	
 				}
 			};
