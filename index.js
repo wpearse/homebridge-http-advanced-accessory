@@ -15,7 +15,7 @@ function HttpAdvancedAccessory(log, config) {
 	this.service = config.service;
 	this.optionCharacteristic = config.optionCharacteristic || [];
 	this.forceRefreshDelay = config.forceRefreshDelay || 0;
-	this.setterDelay  = config.setterDelay || 200;
+	this.setterDelay  = config.setterDelay || 0;
 	this.enableSet = true;
 	this.statusEmitters = [];
 	this.state = {};
@@ -243,7 +243,7 @@ HttpAdvancedAccessory.prototype = {
 
 				this.httpRequest(url, body, action.httpMethod, function(error, response, responseBody) {
 					if (error) {
-						this.log("GetState function failed: %s", error.message);
+						this.log("SetState function failed: %s", error.message);
 						callback(error);
 					} else {
 						callback(null, value);
@@ -402,14 +402,21 @@ HttpAdvancedAccessory.prototype = {
 					}
 				},
 				setter: function (value, callback) { 
-					this.debugLog("updating " + characteristic.displayName.replace(/\s/g, '') + " with value " + value + " in " + this.setterDelay + "ms");
-					if(timeoutID != null) {
-						clearTimeout(timeoutID.tid); 
-						timeoutID.callback();
-						this.debugLog("clearing timeout for setter " + characteristic.displayName.replace(/\s/g, ''));
-					}
-					timeoutID = {callback : callback};
-					timeoutID.tid = setTimeout(function(){setDispatch(value, callback, characteristic);timeoutID=null;}.bind(this), this.setterDelay);
+					if (this.enableSet == false || setterDelay === 0) {
+						// no setter delay or internal set - do it immediately 
+						this.debugLog("updating " + characteristic.displayName.replace(/\s/g, '') + " with value " + value);
+						setDispatch(value, callback, characteristic);
+					} else {
+						// making a request and setter delay is set
+						this.debugLog("updating " + characteristic.displayName.replace(/\s/g, '') + " with value " + value + " in " + this.setterDelay + "ms");
+						if(timeoutID != null) {
+							clearTimeout(timeoutID.tid); 
+							timeoutID.callback();
+							this.debugLog("clearing timeout for setter " + characteristic.displayName.replace(/\s/g, ''));
+						}
+						timeoutID = {callback : callback};
+						timeoutID.tid = setTimeout(function(){setDispatch(value, callback, characteristic);timeoutID=null;}.bind(this), this.setterDelay);
+					}	
 				}
 			};
 		}

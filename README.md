@@ -122,7 +122,7 @@ Configuration sample:
 - The **urls section** configures the URLs that are to be called on certain events. It contains a key-value map of actions that can be executed. The key is name of the action and the value is a configuration JSON object for that action. See the [Actions](#actions) section below.
 - The **polling** is a boolean that specifies if the current state should be pulled on regular intervals or not. Defaults to false.
 - **forceRefreshDelay** is a number which defines the poll interval in seconds. Defaults to 0.
-- **setterDelay** is a number which defines the number of milliseconds to wait before executing a "set" action request. If more than one request is received during this interval, only the last one is executed. Defaults to 200.
+- **setterDelay** is a number which defines the number of milliseconds to wait before executing a "set" action request. If more than one request is received during this interval, only the last one is executed. Defaults to 0 - disabled.
 
 ## Actions
 
