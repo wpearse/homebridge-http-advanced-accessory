@@ -33,6 +33,7 @@
             "service": "Switch",
             "name": "Switch",
             "debug" : true,
+            "setterDelay": 5000,
             "urls":{
                 "getOn": {
                     "url" : "http://urlecho.appspot.com/echo?status=200&Content-Type=text%2Fhtml&body={\"value\":1}",
@@ -46,7 +47,55 @@
                     ]
                 },
                 "setOn":{
-                    "url" : "http://urlecho.appspot.com/echo?status=200&Content-Type=text%2Fhtml&body={\"value\":${value}"
+                    "url" : "http://111urlecho.appspot.com/echo?status=200&Content-Type=text%2Fhtml&body={\"value\":${value}"
+                }
+            }
+        },
+        {
+            "accessory": "HttpAdvancedAccessory",
+            "service": "WindowCovering",
+            "name": "Kitchen Blinds",
+            "debug": true,
+            "setterDelay": 5000,
+            "forceRefreshDelay": 10,
+            "polling": true,
+            "optionCharacteristic": [],
+            "urls": {
+                "getCurrentPosition": {
+                    "url": "http://urlecho.appspot.com/echo?status=200&Content-Type=text%2Fhtml&body={\"value\":1}",
+                    "httpMethod": "GET",
+                    "mappers": [
+                        {
+                            "type": "jpath",
+                            "parameters": {
+                                "jpath": "$.value"
+                            }
+                        }
+                    ]
+                },
+                "getTargetPosition": {
+                    "url": "http://urlecho.appspot.com/echo?status=200&Content-Type=text%2Fhtml&body={\"value\":10}",
+                    "httpMethod": "GET",
+                    "mappers": [
+                        {
+                            "type": "jpath",
+                            "parameters": {
+                                "jpath": "$.value"
+                            }
+                        }
+                    ]
+                },
+                "setTargetPosition": {
+                    "url": "http://urlecho.appspot.com/echo?status=200&Content-Type=text%2Fhtml&body={\"value\":{value}}",
+                    "httpMethod": "GET",
+                    "mappers": [
+                        {
+                            "type": "jpath",
+                            "parameters": {
+                                "jpath": "$.value"
+                            }
+                        }
+                    ]
                 }
             }
         }

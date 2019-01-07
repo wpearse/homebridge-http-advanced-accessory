@@ -15,7 +15,7 @@ function HttpAdvancedAccessory(log, config) {
 	this.service = config.service;
 	this.optionCharacteristic = config.optionCharacteristic || [];
 	this.forceRefreshDelay = config.forceRefreshDelay || 0;
-	this.setterDelay  = config.setterDelay || 200;
+	this.setterDelay  = config.setterDelay || 0;
 	this.enableSet = true;
 	this.statusEmitters = [];
 	this.state = {};
@@ -243,10 +243,15 @@ HttpAdvancedAccessory.prototype = {
 
 				this.httpRequest(url, body, action.httpMethod, function(error, response, responseBody) {
 					if (error) {
-						this.log("GetState function failed: %s", error.message);
-						callback(error);
-					} else {
-						callback(null, value);
+						this.log("SetState function failed: %s", error.message);
+					}
+					if (callback) {
+						if (error) {
+							callback(error);
+						} else {
+							// https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/Characteristic.js#L34 setter callback takes only error as arg
+							callback(); 
+						}	
 					}
 				}.bind(this));
 
@@ -402,14 +407,23 @@ HttpAdvancedAccessory.prototype = {
 					}
 				},
 				setter: function (value, callback) { 
-					this.debugLog("updating " + characteristic.displayName.replace(/\s/g, '') + " with value " + value + " in " + this.setterDelay + "ms");
-					if(timeoutID != null) {
-						clearTimeout(timeoutID.tid); 
-						timeoutID.callback();
-						this.debugLog("clearing timeout for setter " + characteristic.displayName.replace(/\s/g, ''));
-					}
-					timeoutID = {callback : callback};
-					timeoutID.tid = setTimeout(function(){setDispatch(value, callback, characteristic);timeoutID=null;}.bind(this), this.setterDelay);
+					if (this.enableSet == false || this.setterDelay === 0) {
+						// no setter delay or internal set - do it immediately 
+						this.debugLog("updating " + characteristic.displayName.replace(/\s/g, '') + " with value " + value);
+						setDispatch(value, callback, characteristic);
+					} else {
+						// making a request and setter delay is set
+						// optimistic callback calling if we have a delay
+						// this also means we won't be getting back any errors in homekit
+						callback();
+						
+						this.debugLog("updating " + characteristic.displayName.replace(/\s/g, '') + " with value " + value + " in " + this.setterDelay + "ms");
+						if(timeoutID != null) {
+							clearTimeout(timeoutID); 
+							this.debugLog("clearing timeout for setter " + characteristic.displayName.replace(/\s/g, ''));
+						}
+						timeoutID = setTimeout(function(){setDispatch(value, null, characteristic);timeoutID=null;}.bind(this), this.setterDelay);
+					}	
 				}
 			};
 		}
