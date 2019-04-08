@@ -14,6 +14,7 @@ function HttpAdvancedAccessory(log, config) {
 	this.name = config.name;
 	this.service = config.service;
 	this.optionCharacteristic = config.optionCharacteristic || [];
+	this.props = config.props || {};
 	this.forceRefreshDelay = config.forceRefreshDelay || 0;
 	this.setterDelay  = config.setterDelay || 0;
 	this.enableSet = true;
