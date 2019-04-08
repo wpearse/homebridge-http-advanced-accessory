@@ -328,6 +328,11 @@ HttpAdvancedAccessory.prototype = {
 		{
 			var characteristic = newService.characteristics[characteristicIndex];
 			var compactName = characteristic.displayName.replace(/\s/g, '');
+			
+			if (compactName in this.props) {
+				characteristic.setProps(this.props[compactName]);
+			}
+			
 			counters[characteristicIndex] = makeHelper(characteristic);
 			characteristic.on('get', counters[characteristicIndex].getter.bind(this))
 			characteristic.on('set', counters[characteristicIndex].setter.bind(this));
@@ -337,7 +342,11 @@ HttpAdvancedAccessory.prototype = {
 		{
 			var characteristic = newService.optionalCharacteristics[characteristicIndex];
 			var compactName = characteristic.displayName.replace(/\s/g, '');
-		
+			
+			if (compactName in this.props) {
+				characteristic.setProps(this.props[compactName]);
+			}
+			
 			if(this.optionCharacteristic.indexOf(compactName) == -1)
 			{
 				continue;
