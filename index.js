@@ -217,7 +217,7 @@ HttpAdvancedAccessory.prototype = {
 						getDispatch(callback,action.inconclusive);
 					}else{
 						this.debugLog("We have a value: %s, int: %d", state, parseInt(state));
-						callback(null, parseInt(state));
+						callback(null, state);
 					}
 				}
 			}.bind(this));
@@ -398,6 +398,12 @@ HttpAdvancedAccessory.prototype = {
 						{
 							this.debugLog(actionName + " emitter returned data: " + data);
 							this.enableSet = false;
+							
+							if (['int', 'uint16', 'uint8', 'uint32', 'uint64'].includes(characteristic.props.format))
+								data = parseInt(data);
+							if ('float' == characteristic.props.format)
+								data = parseFloat(data);
+
 							this.state[actionName] = data;
 							characteristic.setValue(data);
 							this.enableSet = true;
