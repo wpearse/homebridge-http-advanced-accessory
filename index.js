@@ -69,7 +69,9 @@ function HttpAdvancedAccessory(log, config) {
 						action.mappers.push(new mappers.JPathMapper(matches.parameters));
 						break;
 					case "eval":
-						action.mappers.push(new mappers.EvalMapper(matches.parameters));
+						var mapper = new mappers.EvalMapper(matches.parameters);
+						mapper.state = self.state;
+						action.mappers.push(mapper);
 						break;
 				}
 			});
