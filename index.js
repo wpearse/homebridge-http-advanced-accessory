@@ -14,6 +14,7 @@ function HttpAdvancedAccessory(log, config) {
 	this.name = config.name;
 	this.service = config.service;
 	this.optionCharacteristic = config.optionCharacteristic || [];
+	this.props = config.props || {};
 	this.forceRefreshDelay = config.forceRefreshDelay || 0;
 	this.setterDelay  = config.setterDelay || 0;
 	this.enableSet = true;
@@ -68,7 +69,9 @@ function HttpAdvancedAccessory(log, config) {
 						action.mappers.push(new mappers.JPathMapper(matches.parameters));
 						break;
 					case "eval":
-						action.mappers.push(new mappers.EvalMapper(matches.parameters));
+						var mapper = new mappers.EvalMapper(matches.parameters);
+						mapper.state = self.state;
+						action.mappers.push(mapper);
 						break;
 				}
 			});
@@ -327,6 +330,11 @@ HttpAdvancedAccessory.prototype = {
 		{
 			var characteristic = newService.characteristics[characteristicIndex];
 			var compactName = characteristic.displayName.replace(/\s/g, '');
+			
+			if (compactName in this.props) {
+				characteristic.setProps(this.props[compactName]);
+			}
+			
 			counters[characteristicIndex] = makeHelper(characteristic);
 			characteristic.on('get', counters[characteristicIndex].getter.bind(this))
 			characteristic.on('set', counters[characteristicIndex].setter.bind(this));
@@ -336,7 +344,11 @@ HttpAdvancedAccessory.prototype = {
 		{
 			var characteristic = newService.optionalCharacteristics[characteristicIndex];
 			var compactName = characteristic.displayName.replace(/\s/g, '');
-		
+			
+			if (compactName in this.props) {
+				characteristic.setProps(this.props[compactName]);
+			}
+			
 			if(this.optionCharacteristic.indexOf(compactName) == -1)
 			{
 				continue;
