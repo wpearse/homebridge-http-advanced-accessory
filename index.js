@@ -52,6 +52,7 @@ function HttpAdvancedAccessory(log, config) {
 		action.url = actionDescription.url;
 		action.httpMethod = actionDescription.httpMethod || "GET";
 		action.body = actionDescription.body || "";
+		action.resultOnError = actionDescription.resultOnError;
 		if (actionDescription.mappers) {
 			action.mappers = [];
 			actionDescription.mappers.forEach(function(matches) {
@@ -207,7 +208,10 @@ HttpAdvancedAccessory.prototype = {
 			}
 			this.debugLog("getDispatch function called for url: %s", action.url);
 			this.httpRequest(action.url, action.body, action.httpMethod, function(error, response, responseBody) {
-				if (error) {
+				if (error && action.resultOnError != null) {
+					this.debugLog("GetState function failed BUT using resultOnError=%s: %s", action.resultOnError, error.message);
+					callback(null, action.resultOnError);
+				} else if (error) {
 					this.log("GetState function failed: %s", error.message);
 					callback(error);
 				} else {
