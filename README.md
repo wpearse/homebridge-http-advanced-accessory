@@ -160,6 +160,7 @@ Where:
 - The **body** (OPTIONAL) parameter is the body of the HTTP POST call.
 - The **mappers** (OPTIONAL) are a chain of blocks that have the purpose to parse the response received, see [Mapping](#mapping)
 - The **inconclusive** (OPTIONAL) parameter is another action that will be invoked if the result of the previous mapping chain is the word "inconclusive"
+- The **resultOnError** (OPTIONAL) parameter, if specified, will be result if the HTTP request encounters an error. This is helpful for HTTP health checks, where failure to connect can be mapped to a (valid) failing value rather than passed through as an error.
 
 ### Setter Action
 
