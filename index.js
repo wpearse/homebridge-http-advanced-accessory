@@ -20,6 +20,8 @@ function HttpAdvancedAccessory(log, config) {
 	this.enableSet = true;
 	this.statusEmitters = [];
 	this.state = {};
+	this.uriCalls=0;
+	this.uriCallsDelay = config.uriCallsDelay || 0;
 	// process the mappers
 	var self = this;
 	self.debug = config.debug;
@@ -125,22 +127,29 @@ HttpAdvancedAccessory.prototype = {
  * @param callback Callback method to call with the result or error (error, response, body)
  */
 	httpRequest : function(url, body, httpMethod, callback) {
-		request({
-			url: url,
-			body: body,
-			method: httpMethod,
-			auth: {
-				user: this.auth.username,
-				pass: this.auth.password,
-				sendImmediately: this.auth.immediately
+		setTimeout(
+			function(){request({
+				url: url,
+				body: body,
+				method: httpMethod,
+				auth: {
+					user: this.auth.username,
+					pass: this.auth.password,
+					sendImmediately: this.auth.immediately
+				},
+				headers: {
+					Authorization: "Basic " + new Buffer(this.auth.username + ":" + this.auth.password).toString("base64")
+				}
 			},
-			headers: {
-				Authorization: "Basic " + new Buffer(this.auth.username + ":" + this.auth.password).toString("base64")
-			}
-		},
-		function(error, response, body) {
-			callback(error, response, body)
-		});
+			function(error, response, body) {
+				this.uriCalls--;
+				this.debugLog("httpRequest ended, current uriCalls is " + this.uriCalls);
+				callback(error, response, body)
+			}.bind(this))}.bind(this), this.uriCalls * this.uriCallsDelay);
+		
+		this.uriCalls++;
+		this.uriCallsDelay=0;
+		this.debugLog("httpRequest called, current uriCalls is " + this.uriCalls); 
 	},
 
 /**

@@ -118,11 +118,12 @@ Configuration sample:
 - The **service** parameter determines the kind of Service\Accessory you will see in HomeKit.
 - The **username/password** configuration can be used to specify the username and password if the remote webserver requires HTTP authentication.
 - A **debug** turns on debug messages. The important bit is that it reports the mapping process so that it's easier to debug.
-- The **optionCharacteristic** is an array of optional Characteristic of the service that you want to expose to HomeKit. The full list of mandatory and optional Characteristics types that HomeKit supports are exposed as a separate subclass in [HomeKitTypes](https://github.com/KhaosT/HAP-NodeJS/blob/HEAD/lib/gen/HomeKitTypes.js).
+- The **optionCharacteristic** is an array of optional Characteristic of the service that you want to expose to HomeKit. The full list of mandatory and optional Characteristics types that HomeKit supports are exposed as a separate subclass in [HomeKitTypes](https://github.com/homebridge/HAP-NodeJS/blob/master/src/lib/gen/HomeKit.ts).
 - The **urls section** configures the URLs that are to be called on certain events. It contains a key-value map of actions that can be executed. The key is name of the action and the value is a configuration JSON object for that action. See the [Actions](#actions) section below.
 - The **polling** is a boolean that specifies if the current state should be pulled on regular intervals or not. Defaults to false.
 - **forceRefreshDelay** is a number which defines the poll interval in seconds. Defaults to 0.
 - **setterDelay** is a number which defines the number of milliseconds to wait before executing a "set" action request. If more than one request is received during this interval, only the last one is executed. Defaults to 0 - disabled.
+- **uriCallsDelay** number of milliseconds to add a short delay between URI calls for devices that can't handle many URI calls at the same time. Defaults to 0 - disabled.
 
 ## Actions
 
@@ -130,7 +131,7 @@ The action is a key-value map that configures the URLs to be called to perform a
 So the key name is composed of two parts:
 
 - The kind of action: "get" or "set"
-- The name of the HomeKit Characteristics for that Service. All known built-in Service and Characteristic types that HomeKit supports are exposed as a separate subclass in [HomeKitTypes](https://github.com/KhaosT/HAP-NodeJS/blob/HEAD/lib/gen/HomeKitTypes.js).
+- The name of the HomeKit Characteristics for that Service. All known built-in Service and Characteristic types that HomeKit supports are exposed as a separate subclass in [HomeKitTypes](https://github.com/homebridge/HAP-NodeJS/blob/master/src/lib/gen/HomeKit.ts).
 
 For example to get the value of the SecuritySystemTargetState Characteristic, the key value would be "getSecuritySystemTargetState" while to set it, "setSecuritySystemTargetState"
 
