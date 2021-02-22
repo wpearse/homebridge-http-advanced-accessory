@@ -212,8 +212,9 @@ HttpAdvancedAccessory.prototype = {
 	
 	getServices: function () {
 		var getDispatch = function (callback, action) {
-			if (!action) {
+			if (typeof action == "undefined") {
 				callback(null);
+				return;
 			}
 			this.debugLog("getDispatch function called for url: %s", action.url);
 			this.httpRequest(action.url, action.body, action.httpMethod, function(error, response, responseBody) {
@@ -379,6 +380,10 @@ HttpAdvancedAccessory.prototype = {
 			return {
 				getter: function (callback) {
 					var actionName = "get" + characteristic.displayName.replace(/\s/g, '');
+					if(actionName == "getName"){
+						callback (null, this.name);
+						return;
+					}
 					var action = this.urls[actionName];
 					if (this.forceRefreshDelay == 0 ) { 
 						getDispatch(function(error,data){
