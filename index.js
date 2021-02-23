@@ -148,7 +148,6 @@ HttpAdvancedAccessory.prototype = {
 			}.bind(this))}.bind(this), this.uriCalls * this.uriCallsDelay);
 		
 		this.uriCalls++;
-		this.uriCallsDelay=0;
 		this.debugLog("httpRequest called, current uriCalls is " + this.uriCalls); 
 	},
 
@@ -397,9 +396,10 @@ HttpAdvancedAccessory.prototype = {
 					} 
 					else {
 						
+						callback(null,this.state[actionName] || characteristic.value);
+
 						if (typeof this.statusEmitters[actionName] != "undefined"){
 							this.debugLog(actionName + " returning cached data: " + this.state[actionName]);
-							callback(null,this.state[actionName]);
 							return;
 						} 
 						this.debugLog("creating new emitter for " + actionName);
@@ -427,13 +427,7 @@ HttpAdvancedAccessory.prototype = {
 							this.state[actionName] = data;
 							characteristic.setValue(data);
 							this.enableSet = true;
-						
-							if(callback){
-								this.debugLog("calling callback for action " + actionName);
-								callback(null, this.state[actionName]);
-							}
-							// just call it once, multiple calls not allowed
-							callback = null;
+
 						}.bind(this));
 
 						this.statusEmitters[actionName].on("error", function(err, data) {
