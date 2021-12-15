@@ -282,58 +282,8 @@ HttpAdvancedAccessory.prototype = {
 			.setCharacteristic(Characteristic.Model, "HTTP Accessory Model")
 			.setCharacteristic(Characteristic.SerialNumber, "HTTP Accessory Serial Number");
 
-		var newService = null
-		switch (this.service) {
-			case "AccessoryInformation": newService = new Service.AccessoryInformation(this.name); break;
-			case "AirPurifier": newService = new Service.AirPurifier(this.name); break;
-			case "AirQualitySensor": newService = new Service.AirQualitySensor(this.name); break;
-			case "BatteryService": newService = new Service.BatteryService(this.name); break;
-			case "BridgeConfiguration": newService = new Service.BridgeConfiguration(this.name); break;
-			case "BridgingState": newService = new Service.BridgingState(this.name); break;
-			case "CameraControl": newService = new Service.CameraControl(this.name); break;
-			case "CameraRTPStreamManagement": newService = new Service.CameraRTPStreamManagement(this.name); break;
-			case "CarbonDioxideSensor": newService = new Service.CarbonDioxideSensor(this.name); break;
-			case "CarbonMonoxideSensor": newService = new Service.CarbonMonoxideSensor(this.name); break;
-			case "ContactSensor": newService = new Service.ContactSensor(this.name); break;
-			case "Door": newService = new Service.Door(this.name); break;
-			case "Doorbell": newService = new Service.Doorbell(this.name); break;
-			case "Fan": newService = new Service.Fan(this.name); break;
-			case "Fanv2": newService = new Service.Fanv2(this.name); break;
-			case "FilterMaintenance": newService = new Service.FilterMaintenance(this.name); break;
-			case "Faucet": newService = new Service.Faucet(this.name); break;
-			case "GarageDoorOpener": newService = new Service.GarageDoorOpener(this.name); break;
-			case "HeaterCooler": newService = new Service.HeaterCooler(this.name); break;
-			case "HumidifierDehumidifier": newService = new Service.HumidifierDehumidifier(this.name); break;
-			case "HumiditySensor": newService = new Service.HumiditySensor(this.name); break;
-			case "IrrigationSystem": newService = new Service.IrrigationSystem(this.name); break;
-			case "LeakSensor": newService = new Service.LeakSensor(this.name); break;
-			case "LightSensor": newService = new Service.LightSensor(this.name); break;
-			case "Lightbulb": newService = new Service.Lightbulb(this.name); break;
-			case "LockManagement": newService = new Service.LockManagement(this.name); break;
-			case "LockMechanism": newService = new Service.LockMechanism(this.name); break;
-			case "Microphone": newService = new Service.Microphone(this.name); break;
-			case "MotionSensor": newService = new Service.MotionSensor(this.name); break;
-			case "OccupancySensor": newService = new Service.OccupancySensor(this.name); break;
-			case "Outlet": newService = new Service.Outlet(this.name); break;
-			case "Pairing": newService = new Service.Pairing(this.name); break;
-			case "ProtocolInformation": newService = new Service.ProtocolInformation(this.name); break;
-			case "Relay": newService = new Service.Relay(this.name); break;
-			case "SecuritySystem": newService = new Service.SecuritySystem(this.name); break;
-			case "SecuritySystem": newService = new Service.SecuritySystem(this.name); break;
-			case "Slat": newService = new Service.Slat(this.name); break;
-			case "Speaker": newService = new Service.Speaker(this.name); break;
-			case "StatefulProgrammableSwitch": newService = new Service.StatefulProgrammableSwitch(this.name); break;
-			case "StatelessProgrammableSwitch": newService = new Service.StatelessProgrammableSwitch(this.name); break;
-			case "Switch": newService = new Service.Switch(this.name); break;
-			case "TemperatureSensor": newService = new Service.TemperatureSensor(this.name); break;
-			case "Thermostat": newService = new Service.Thermostat(this.name); break;
-			case "TimeInformation": newService = new Service.TimeInformation(this.name); break;
-			case "TunneledBTLEAccessoryService": newService = new Service.TunneledBTLEAccessoryService(this.name); break;
-			case "Valve": newService = new Service.Valve(this.name); break;
-			case "Window": newService = new Service.Window(this.name); break;
-			case "WindowCovering": newService = new Service.WindowCovering(this.name); break;
-			default: newService = null
-		}
+		
+		var newService = new Service[this.service](this.name);
 
 		var counters = [];
 		var optionCounters = [];
