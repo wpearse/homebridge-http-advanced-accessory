@@ -82,21 +82,31 @@ function JPathMapper(parameters) {
 	var self = this;
 	self.jpath = parameters.jpath;
 	self.index = parameters.index || 0;
-
+        
 	self.map = function(value) {
-		var json = JSON.parse(value);
-		var result  = JSONPath({path: self.jpath, json: json});
+	  var result = 'inconclusive';
+	  var json;
+	  
+	  try {
+	    json = JSON.parse(value);
+	    } catch (e) {
+	    return result;
+	    }
 
-		if (result instanceof Array && result.length > self.index) {
-			result = result[self.index];
-		}
-		
-		if (result instanceof Object) {
-			return JSON.stringify(result);
-		}
+        if (typeof json !== 'object') {
+          return result;
+        } else {
+          result = JSONPath({path: self.jpath, json: json});
+          if (result instanceof Array && result.length > self.index) {
+	        result = result[self.index];
+	        }
+	      if (result instanceof Object) {
+	        result = JSON.stringify(result);
+	        }
+	      }
 
-		return result;
-	};
+	return result;
+	}
 }
 
 /**

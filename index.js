@@ -227,10 +227,15 @@ HttpAdvancedAccessory.prototype = {
 					this.debugLog("received response from action: %s", action.url);
 					var state = responseBody;
 					state = this.applyMappers(action.mappers,state);
-					if(state == "inconclusive" && action.inconclusive){
-						this.debugLog("response inconclusive, try again.");
-						getDispatch(callback,action.inconclusive);
-					}else{
+					if (state == "inconclusive") {
+					   this.log(`Inconclusive mapping of response "${responseBody}"`);
+					   if (action.inconclusive){
+					     this.debugLog("Response inconclusive and trying the action specified for this condition.");
+					     getDispatch(callback,action.inconclusive);
+					   } else {
+					     this.debugLog("Response inconclusive with no further action specified for this condition.");
+					     }
+					} else {
 						this.debugLog("We have a value: %s, int: %d", state, parseInt(state));
 						callback(null, state);
 					}
