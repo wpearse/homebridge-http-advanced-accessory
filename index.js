@@ -12,6 +12,9 @@ module.exports = function (homebridge) {
 function HttpAdvancedAccessory(log, config) {
 	this.log = log;
 	this.name = config.name;
+	this.accessoryManufacturer = config.manufacturer || "Custom Manufacturer";
+	this.accessoryModel = config.model || "HTTP Accessory Model";
+	this.accessorySerialNumber = config.serialNumber || "HTTP Accessory Serial Number";
 	this.service = config.service;
 	this.optionCharacteristic = config.optionCharacteristic || [];
 	this.props = config.props || {};
@@ -283,9 +286,9 @@ HttpAdvancedAccessory.prototype = {
 		var informationService = new Service.AccessoryInformation();
 
 		informationService
-			.setCharacteristic(Characteristic.Manufacturer, "Custom Manufacturer")
-			.setCharacteristic(Characteristic.Model, "HTTP Accessory Model")
-			.setCharacteristic(Characteristic.SerialNumber, "HTTP Accessory Serial Number");
+			.setCharacteristic(Characteristic.Manufacturer, this.accessoryManufacturer)
+			.setCharacteristic(Characteristic.Model, this.accessoryModel)
+			.setCharacteristic(Characteristic.SerialNumber, this.accessorySerialNumber);
 
 		
 		var newService = new Service[this.service](this.name);
